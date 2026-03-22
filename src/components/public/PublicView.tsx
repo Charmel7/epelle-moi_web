@@ -25,7 +25,8 @@ import { PHASE_LABELS } from '../../types';
 
 const SPONSORS: { nom: string; logoUrl?: string }[] = [
   { nom: 'CAEB-Abomey',logoUrl:'/logos/Logo_CAEB.png' },
-  { nom: 'Club RFI Abomey',logoUrl:'/logos/Logo_RFI-ABOMEY.jpeg' },
+  { nom: 'Club RFI Abomey', logoUrl: '/logos/Logo_RFI-ABOMEY.jpeg' },
+  { nom: 'Club CEEC', logoUrl: '/logos/Logo_CEEC.png' },
  
 ];
 
@@ -488,7 +489,7 @@ const PublicView: React.FC = () => {
                         <LightLetterTile
                           key={`${i}-${letter}`}
                           letter={letter}
-                          status={showFinalColors ? letterStatuses[i] : 'pending'}
+                          status={showFinalColors ? (status === 'incorrect' ? 'incorrect' : letterStatuses[i]) : 'pending'}
                           size={tileSize}
                           index={i}
                         />
