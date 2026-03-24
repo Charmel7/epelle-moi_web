@@ -24,10 +24,9 @@ import { PHASE_LABELS } from '../../types';
 // ─────────────────────────────────────────────
 
 const SPONSORS: { nom: string; logoUrl?: string }[] = [
-  { nom: 'CAEB-Abomey',logoUrl:'/logos/Logo_CAEB.png' },
+  { nom: 'CAEB-Abomey', logoUrl: '/logos/Logo_CAEB.png' },
   { nom: 'Club RFI Abomey', logoUrl: '/logos/Logo_RFI-ABOMEY.jpeg' },
   { nom: 'Club CEEC', logoUrl: '/logos/Logo_CEEC.png' },
- 
 ];
 
 // ─────────────────────────────────────────────
@@ -47,7 +46,7 @@ const SponsorItem: React.FC<{ sponsor: { nom: string; logoUrl?: string } }> = ({
         <img
           src={sponsor.logoUrl}
           alt={displayText}
-          className="h-12 w-15 max-w-36 object-contain"
+          className="h-8 w-auto max-w-36 object-contain"
           onError={() => setImgFailed(true)}
         />
       ) : (
@@ -161,24 +160,24 @@ const CandidatBadge: React.FC<{ nom: string | null }> = ({ nom }) => {
 
   return (
     <div
-      className={`flex items-center gap-4 transition-all duration-400 ${
+      className={`flex items-center gap-3 transition-all duration-400 ${
         visible ? 'candidat-enter opacity-100' : 'opacity-0 -translate-x-4'
       }`}
     >
       <div
-        className="w-12 h-12 flex items-center justify-center text-lg font-black flex-shrink-0"
-        style={{ border: '2px solid #222', color: '#444' }}
+        className="flex items-center justify-center font-black flex-shrink-0"
+        style={{ border: '2px solid #222', color: '#444', width: 'clamp(28px, 4vw, 48px)', height: 'clamp(28px, 4vw, 48px)', fontSize: 'clamp(10px, 1.5vw, 18px)' }}
       >
         ◈
       </div>
       <div>
-        <p className="text-xs tracking-[0.45em] uppercase leading-none mb-1.5 font-semibold"
-          style={{ color: '#888' }}>
+        <p className="tracking-[0.4em] uppercase leading-none font-semibold mb-1"
+          style={{ color: '#888', fontSize: 'clamp(7px, 1vw, 11px)' }}>
           CANDIDAT
         </p>
         <p
           className="font-black tracking-wider leading-none uppercase"
-          style={{ fontSize: 'clamp(1.4rem, 3vw, 2.2rem)', color: '#000' }}
+          style={{ fontSize: 'clamp(1rem, 2.5vw, 2rem)', color: '#000' }}
         >
           {displayNom}
         </p>
@@ -258,40 +257,45 @@ const RevelationPanel: React.FC<{
 
   return (
     <div
-      className="reveal-panel-enter flex flex-col items-center gap-8 w-full max-w-4xl p-14"
-      style={{ border: `3px solid ${borderColor}`, background: '#fff' }}
+      className="reveal-panel-enter flex flex-col items-center w-full max-w-4xl"
+      style={{
+        border: `3px solid ${borderColor}`,
+        background: '#fff',
+        gap: 'clamp(12px, 2vh, 32px)',
+        padding: 'clamp(16px, 3vw, 56px)',
+      }}
     >
       {/* Statut */}
       <div
         className="font-black tracking-[0.25em] uppercase"
-        style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', color: statusColor }}
+        style={{ fontSize: 'clamp(1.6rem, 4vw, 4rem)', color: statusColor }}
       >
         {statusText}
       </div>
 
-      <div style={{ width: 80, height: 3, background: sepColor }} />
+      <div style={{ width: 60, height: 3, background: sepColor, flexShrink: 0 }} />
 
       {/* Mot correct */}
       <div className="text-center">
-        <p className="text-sm tracking-[0.5em] uppercase mb-4 font-bold" style={{ color: '#999' }}>
+        <p className="tracking-[0.5em] uppercase font-bold" style={{ color: '#999', fontSize: 'clamp(9px, 1.2vw, 13px)', marginBottom: '8px' }}>
           ORTHOGRAPHE CORRECTE
         </p>
         <p
           className="font-black tracking-widest uppercase"
-          style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)', color: '#000' }}
+          style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)', color: '#000' }}
         >
           {motCorrect}
         </p>
       </div>
 
-      <div style={{ width: 80, height: 1.5, background: '#e5e5e5' }} />
+      <div style={{ width: 60, height: 1.5, background: '#e5e5e5', flexShrink: 0 }} />
 
       {/* Définition */}
       <div className="text-center max-w-2xl">
-        <p className="text-sm tracking-[0.5em] uppercase mb-3 font-bold" style={{ color: '#999' }}>
+        <p className="tracking-[0.5em] uppercase font-bold" style={{ color: '#999', fontSize: 'clamp(9px, 1.2vw, 13px)', marginBottom: '8px' }}>
           DÉFINITION
         </p>
-        <p className="text-2xl leading-relaxed font-light" style={{ color: '#222' }}>
+        <p className="font-light" style={{ fontSize: 'clamp(0.95rem, 2vw, 1.5rem)', lineHeight: 1.6, color: '#222' }}>
           {definition}
         </p>
       </div>
@@ -435,26 +439,32 @@ const PublicView: React.FC = () => {
 
           {/* ── Header ── grid 3 colonnes pour centrage parfait */}
           <div
-            className="grid grid-cols-3 items-center px-8 pt-6 pb-3 gap-2"
-            style={{ borderBottom: '1px solid rgba(0,0,0,.08)' }}
+            className="grid grid-cols-3 items-center px-6 gap-2 flex-shrink-0"
+            style={{ borderBottom: '1px solid rgba(0,0,0,.08)', padding: 'clamp(8px, 1.5vh, 20px) 24px' }}
           >
             {/* Gauche : candidat */}
             <div className="flex justify-start min-w-0">
               <CandidatBadge nom={candidatActif?.nom ?? null} />
             </div>
 
-            {/* Centre : titre */}
-            <div className="flex flex-col items-center text-center">
-              <p className="text-xs tracking-[0.55em] uppercase mb-1 font-light" style={{ color: '#aaa' }}>
+            {/* Centre : titre + badge finale intégré */}
+            <div className="flex flex-col items-center text-center gap-1">
+              <p className="tracking-[0.55em] uppercase font-light" style={{ color: '#aaa', fontSize: 'clamp(7px, 1vw, 11px)' }}>
                 CONCOURS
               </p>
               <h1 className="font-black uppercase leading-none">
-                <span className="block text-2xl tracking-[0.2em]" style={{ color: '#111' }}>ÉPELLE</span>
-                <span className="block text-5xl tracking-[0.12em]" style={{ color: '#000' }}>MOI</span>
+                <span className="block tracking-[0.2em]" style={{ color: '#111', fontSize: 'clamp(14px, 2.5vw, 24px)' }}>ÉPELLE</span>
+                <span className="block tracking-[0.12em]" style={{ color: '#000', fontSize: 'clamp(28px, 5vw, 48px)' }}>MOI</span>
               </h1>
+              {/* Badge FINALE dans le header pour éviter le chevauchement */}
+              {isFinale && (
+                <div className="mt-1">
+                  <PhaseBadge phase={phaseLabel} isFinale={true} />
+                </div>
+              )}
             </div>
 
-            {/* Droite : phase */}
+            {/* Droite : phase (hors finale) */}
             <div className="flex justify-end min-w-0">
               {competition && !isFinale && (
                 <PhaseBadge phase={phaseLabel} isFinale={false} />
@@ -462,16 +472,9 @@ const PublicView: React.FC = () => {
             </div>
           </div>
 
-          {/* Badge FINALE centré sous le header */}
-          {isFinale && (
-            <div className="flex justify-center pt-2 pb-1">
-              <PhaseBadge phase={phaseLabel} isFinale={true} />
-            </div>
-          )}
-
-          {/* ── Contenu principal ── */}
-          <div className="flex-1 flex items-center justify-center px-10 min-h-0">
-            <div className="flex flex-col items-center gap-10 w-full">
+          {/* ── Contenu principal ── scrollable si contenu dépasse */}
+          <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
+            <div className="flex flex-col items-center justify-center min-h-full w-full" style={{ gap: 'clamp(12px, 2vh, 40px)' }}>
 
               {/* CAS 1 : Révélation */}
               {isRevelation && competition?.motActuel ? (
@@ -489,7 +492,7 @@ const PublicView: React.FC = () => {
                         <LightLetterTile
                           key={`${i}-${letter}`}
                           letter={letter}
-                          status={showFinalColors ? (status === 'incorrect' ? 'incorrect' : letterStatuses[i]) : 'pending'}
+                          status={showFinalColors ? letterStatuses[i] : 'pending'}
                           size={tileSize}
                           index={i}
                         />
