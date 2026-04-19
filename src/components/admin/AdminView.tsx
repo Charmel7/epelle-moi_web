@@ -200,24 +200,49 @@ const AdminView: React.FC = () => {
               INTERFACE DE CONTRÔLE
             </p>
           </div>
-          <div className="flex gap-8">
-            <StatBadge value={words.length} label="MOTS" />
-            <StatBadge value={candidates.length} label="CANDIDATS" />
-            {competition.globalChronoActif && (
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center text-xs font-mono font-black border-2 border-red-500 text-red-500 bg-red-50">
-                  {Math.floor(competition.globalChronoTemps / 60)}:{String(competition.globalChronoTemps % 60).padStart(2, '0')}
+
+          <div className="flex items-center gap-6">
+            {/* Accès rapides */}
+            <div className="flex gap-2 pr-6" style={{ borderRight: '1.5px solid #f0ede8' }}>
+              <button
+                onClick={() => window.open('/public', '_blank')}
+                className="px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all"
+                style={{ border: '1.5px solid #111', color: '#111', background: 'transparent' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#000'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#111'; }}
+              >
+                VUE PUBLIC ↗
+              </button>
+              <button
+                onClick={() => window.open('/dashboard', '_blank')}
+                className="px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all"
+                style={{ border: '1.5px solid #e0ddd8', color: '#666', background: 'transparent' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f5f2ed'; e.currentTarget.style.borderColor = '#bbb'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#e0ddd8'; }}
+              >
+                CLASSEMENT ↗
+              </button>
+            </div>
+
+            <div className="flex gap-8">
+              <StatBadge value={words.length} label="MOTS" />
+              <StatBadge value={candidates.length} label="CANDIDATS" />
+              {competition.globalChronoActif && (
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-xs font-mono font-black border-2 border-red-500 text-red-500 bg-red-50">
+                    {Math.floor(competition.globalChronoTemps / 60)}:{String(competition.globalChronoTemps % 60).padStart(2, '0')}
+                  </div>
+                  <span className="text-[10px] tracking-widest uppercase font-semibold text-red-400">
+                    GLOBAL
+                  </span>
                 </div>
-                <span className="text-[10px] tracking-widest uppercase font-semibold text-red-400">
-                  GLOBAL
-                </span>
-              </div>
-            )}
-            <StatBadge
-              value={competition.phase.charAt(0).toUpperCase()}
-              label={PHASE_LABELS[competition.phase]}
-              active
-            />
+              )}
+              <StatBadge
+                value={competition.phase.charAt(0).toUpperCase()}
+                label={PHASE_LABELS[competition.phase]}
+                active
+              />
+            </div>
           </div>
         </div>
       </header>

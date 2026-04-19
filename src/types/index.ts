@@ -26,7 +26,7 @@ export const PHASE_TIME_LIMITS: Record<Phase, number> = {
   qualifications: 60,
   eliminatoires: 45,
   'demi-finale': 30,
-  finale: 20,
+  finale: 30,
 };
 
 // ─────────────────────────────────────────────
