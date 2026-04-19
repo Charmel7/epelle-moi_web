@@ -85,13 +85,13 @@ const PodiumCard: React.FC<{
 const DashboardView: React.FC = () => {
   const analytics = useAnalytics();
   const words = useCompetitionStore((s) => s.words);
+  const competition = useCompetitionStore((s) => s.competition);
   const { 
-    globalChronoTemps, 
-    globalChronoActif, 
-    startGlobalChrono, 
-    stopGlobalChrono, 
+    triggerGlobalChrono, 
     resetGlobalChrono 
   } = useCompetitionStore();
+
+  const { globalChronoTemps, globalChronoActif } = competition;
 
   useChrono();
 
@@ -134,14 +134,14 @@ const DashboardView: React.FC = () => {
           <div className="flex gap-3">
             {!globalChronoActif ? (
               <button
-                onClick={() => startGlobalChrono()}
+                onClick={() => triggerGlobalChrono()}
                 className="px-6 py-2 text-sm font-bold tracking-widest bg-white text-black hover:bg-white/80 transition-all"
               >
                 LANCER LE CHRONO
               </button>
             ) : (
               <button
-                onClick={() => stopGlobalChrono()}
+                onClick={() => triggerGlobalChrono()}
                 className="px-6 py-2 text-sm font-bold tracking-widest border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all"
               >
                 ARRÊTER
