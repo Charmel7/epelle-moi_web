@@ -39,6 +39,8 @@ const INITIAL_COMPETITION_STATE: CompetitionState = {
   lettresSaisies: '',
   chronoActif: false,
   tempsRestant: PHASE_TIME_LIMITS['qualifications'],
+  globalChronoActif: false,
+  globalChronoTemps: 180, // 3 minutes
 };
 
 // ─────────────────────────────────────────────
@@ -137,6 +139,14 @@ interface CompetitionStore {
 
   /** Décrémente le temps restant (appelé par un interval local) */
   tickChrono: () => void;
+
+  // ── Actions : Chronomètre Global ──────────
+
+  /** Lance ou arrête le chronomètre global (3 min) */
+  triggerGlobalChrono: () => Promise<void>;
+
+  /** Réinitialise le chronomètre global à 3 min */
+  resetGlobalChrono: () => Promise<void>;
 
   // ── Actions : Reset ───────────────────────
 
@@ -362,16 +372,61 @@ const useCompetitionStore = create<CompetitionStore>()(
 
       tickChrono: () => {
         set((state) => {
-          const newTime = state.competition.tempsRestant - 1;
-          if (newTime <= 0) {
-            // Temps écoulé → valider comme incorrect automatiquement
-            get().validerIncorrect();
-            return state;
+          const updates: Partial<CompetitionState> = {};
+          
+          // Chrono du mot actuel
+          if (state.competition.chronoActif) {
+            const newTime = state.competition.tempsRestant - 1;
+            if (newTime <= 0) {
+              // Temps écoulé → valider comme incorrect automatiquement
+              setTimeout(() => get().validerIncorrect(), 0);
+              updates.tempsRestant = 0;
+              updates.chronoActif = false;
+            } else {
+              updates.tempsRestant = newTime;
+            }
           }
+
+          // Chrono global
+          if (state.competition.globalChronoActif) {
+            const newGlobalTime = state.competition.globalChronoTemps - 1;
+            if (newGlobalTime <= 0) {
+              updates.globalChronoTemps = 0;
+              updates.globalChronoActif = false;
+            } else {
+              updates.globalChronoTemps = newGlobalTime;
+            }
+          }
+
+          if (Object.keys(updates).length === 0) return state;
+
           return {
-            competition: { ...state.competition, tempsRestant: newTime },
+            competition: { ...state.competition, ...updates },
           };
         });
+      },
+
+      // ─────────────────────────────────────
+      // CHRONOMÈTRE GLOBAL
+      // ─────────────────────────────────────
+
+      triggerGlobalChrono: async () => {
+        const { competition } = get();
+        const updates: Partial<CompetitionState> = competition.globalChronoActif 
+          ? { globalChronoActif: false } 
+          : { globalChronoActif: true, globalChronoTemps: 180 };
+        
+        await supabaseService.competition.updateState(updates);
+        set((state) => ({ competition: { ...state.competition, ...updates } }));
+      },
+
+      resetGlobalChrono: async () => {
+        const updates: Partial<CompetitionState> = { 
+          globalChronoTemps: 180,
+          globalChronoActif: false 
+        };
+        await supabaseService.competition.updateState(updates);
+        set((state) => ({ competition: { ...state.competition, ...updates } }));
       },
 
       // ─────────────────────────────────────

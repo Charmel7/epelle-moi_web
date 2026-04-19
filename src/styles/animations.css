@@ -143,3 +143,13 @@
   animation: scanLine 6s linear infinite;
   pointer-events: none;
 }
+
+/* ─── Bounce subtil (chrono global) ──────────────────── */
+@keyframes bounceSubtle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+.animate-bounce-subtle {
+  animation: bounceSubtle 2s ease-in-out infinite;
+}

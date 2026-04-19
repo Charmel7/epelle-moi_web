@@ -15,6 +15,7 @@ import {
   ResponsiveContainer, Cell,
 } from 'recharts';
 import useCompetitionStore, { selectScoreboard } from '../../store/useCompetitionStore';
+import { useChrono } from '../../hooks';
 import csvService from '../../services/csvService';
 import type { CompetitionAnalytics } from '../../types';
 
@@ -84,6 +85,15 @@ const PodiumCard: React.FC<{
 const DashboardView: React.FC = () => {
   const analytics = useAnalytics();
   const words = useCompetitionStore((s) => s.words);
+  const { 
+    globalChronoTemps, 
+    globalChronoActif, 
+    startGlobalChrono, 
+    stopGlobalChrono, 
+    resetGlobalChrono 
+  } = useCompetitionStore();
+
+  useChrono();
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -100,16 +110,51 @@ const DashboardView: React.FC = () => {
               TABLEAU DE BORD
             </p>
           </div>
-          <button
-            onClick={() => csvService.exportToCsv(words)}
-            className="border border-white/40 px-6 py-2 text-sm text-white hover:bg-white hover:text-black transition-all"
-          >
-            EXPORTER CSV
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={() => csvService.exportToCsv(words)}
+              className="border border-white/40 px-6 py-2 text-sm text-white hover:bg-white hover:text-black transition-all"
+            >
+              EXPORTER CSV
+            </button>
+          </div>
         </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-8 py-8 flex flex-col gap-8">
+
+        {/* Chrono Global 3 Min */}
+        <div className="border border-white/10 p-6 flex items-center justify-between bg-white/5">
+          <div className="flex flex-col gap-1">
+            <p className="text-white/30 text-xs tracking-widest uppercase">CHRONOMÈTRE GLOBAL (3 MIN)</p>
+            <p className="text-3xl font-black font-mono">
+              {Math.floor(globalChronoTemps / 60)}:{String(globalChronoTemps % 60).padStart(2, '0')}
+            </p>
+          </div>
+          <div className="flex gap-3">
+            {!globalChronoActif ? (
+              <button
+                onClick={() => startGlobalChrono()}
+                className="px-6 py-2 text-sm font-bold tracking-widest bg-white text-black hover:bg-white/80 transition-all"
+              >
+                LANCER LE CHRONO
+              </button>
+            ) : (
+              <button
+                onClick={() => stopGlobalChrono()}
+                className="px-6 py-2 text-sm font-bold tracking-widest border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+              >
+                ARRÊTER
+              </button>
+            )}
+            <button
+              onClick={() => resetGlobalChrono()}
+              className="px-6 py-2 text-sm font-bold tracking-widest border border-white/20 text-white/60 hover:border-white/40 hover:text-white transition-all"
+            >
+              RESET
+            </button>
+          </div>
+        </div>
 
         {/* Stats globales */}
         <div className="grid grid-cols-4 gap-4">

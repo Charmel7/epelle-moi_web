@@ -153,6 +153,7 @@ const AdminView: React.FC = () => {
     updateLettres, effacerLettres, validerCorrect, validerIncorrect,
     reveler, tirerMotSuivant, ajouterCandidat, supprimerCandidat,
     setCandidatActif, setPhase,
+    triggerGlobalChrono, resetGlobalChrono
   } = useCompetitionStore();
 
   useChrono();
@@ -202,6 +203,16 @@ const AdminView: React.FC = () => {
           <div className="flex gap-8">
             <StatBadge value={words.length} label="MOTS" />
             <StatBadge value={candidates.length} label="CANDIDATS" />
+            {competition.globalChronoActif && (
+              <div className="flex flex-col items-center gap-1">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center text-xs font-mono font-black border-2 border-red-500 text-red-500 bg-red-50">
+                  {Math.floor(competition.globalChronoTemps / 60)}:{String(competition.globalChronoTemps % 60).padStart(2, '0')}
+                </div>
+                <span className="text-[10px] tracking-widest uppercase font-semibold text-red-400">
+                  GLOBAL
+                </span>
+              </div>
+            )}
             <StatBadge
               value={competition.phase.charAt(0).toUpperCase()}
               label={PHASE_LABELS[competition.phase]}
@@ -382,23 +393,36 @@ const AdminView: React.FC = () => {
                 {[
                   { label: 'RETOUR', onClick: () => updateLettres(competition.lettresSaisies.slice(0, -1)), danger: false },
                   { label: 'EFFACER', onClick: effacerLettres, danger: true },
-                ].map(({ label, onClick, danger }) => (
+                  { 
+                    label: competition.globalChronoActif ? 'STOP CHRONO' : 'CHRONO 3M', 
+                    onClick: triggerGlobalChrono, 
+                    accent: true 
+                  },
+                ].map(({ label, onClick, danger, accent }) => (
                   <button
                     key={label}
                     onClick={onClick}
                     className="px-4 py-2 text-xs font-bold tracking-widest transition-all"
                     style={{
-                      border: `1.5px solid ${danger ? '#fecaca' : '#e0ddd8'}`,
-                      color: danger ? '#dc2626' : '#999',
-                      background: 'transparent',
+                      border: `1.5px solid ${danger ? '#fecaca' : accent ? '#000' : '#e0ddd8'}`,
+                      color: danger ? '#dc2626' : accent ? '#fff' : '#999',
+                      background: accent ? '#000' : 'transparent',
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.background = danger ? '#fef2f2' : '#f5f2ed';
-                      e.currentTarget.style.borderColor = danger ? '#dc2626' : '#bbb';
+                      if (accent) {
+                        e.currentTarget.style.background = '#333';
+                      } else {
+                        e.currentTarget.style.background = danger ? '#fef2f2' : '#f5f2ed';
+                        e.currentTarget.style.borderColor = danger ? '#dc2626' : '#bbb';
+                      }
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.background = 'transparent';
-                      e.currentTarget.style.borderColor = danger ? '#fecaca' : '#e0ddd8';
+                      if (accent) {
+                        e.currentTarget.style.background = '#000';
+                      } else {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.borderColor = danger ? '#fecaca' : '#e0ddd8';
+                      }
                     }}
                   >
                     {label}

@@ -136,6 +136,12 @@ export interface CompetitionState {
 
   /** Temps restant en secondes pour le mot actuel */
   tempsRestant: number;
+
+  /** Vrai si le chronomètre global (3 min) tourne */
+  globalChronoActif: boolean;
+
+  /** Temps restant en secondes pour le chronomètre global */
+  globalChronoTemps: number;
 }
 
 // ─────────────────────────────────────────────

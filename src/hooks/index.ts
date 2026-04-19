@@ -28,11 +28,13 @@ import type { CompetitionState, Candidate } from '../types';
  */
 export function useChrono(): void {
   const chronoActif = useCompetitionStore((s) => s.competition.chronoActif);
+  const globalChronoActif = useCompetitionStore((s) => s.competition.globalChronoActif);
+  const anyChronoActif = chronoActif || globalChronoActif;
   const tickChrono = useCompetitionStore((s) => s.tickChrono);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (chronoActif) {
+    if (anyChronoActif) {
       intervalRef.current = setInterval(() => {
         tickChrono();
       }, 1000);
@@ -46,7 +48,7 @@ export function useChrono(): void {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [chronoActif, tickChrono]);
+  }, [anyChronoActif, tickChrono]);
 }
 
 // ─────────────────────────────────────────────

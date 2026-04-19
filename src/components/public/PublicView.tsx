@@ -396,7 +396,10 @@ const PublicView: React.FC = () => {
 
   // Mises à jour temps réel
   useRealtime(
-    (state) => setCompetition(state),
+    (state) => {
+      console.log("[PublicView] State Update:", state);
+      setCompetition(state);
+    },
     (cands) => setCandidates(cands)
   );
 
@@ -408,6 +411,19 @@ const PublicView: React.FC = () => {
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [handleKey]);
+  
+  // Tick local pour la fluidité (évite d'attendre la synchro Supabase pour chaque seconde)
+  useEffect(() => {
+    if (competition?.globalChronoActif) {
+      const interval = setInterval(() => {
+        setCompetition(prev => {
+          if (!prev || !prev.globalChronoActif || prev.globalChronoTemps <= 0) return prev;
+          return { ...prev, globalChronoTemps: prev.globalChronoTemps - 1 };
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [competition?.globalChronoActif]);
 
   // Dérivés
   const candidatActif   = candidates.find((c) => c.id === competition?.candidatActifId) ?? null;
@@ -416,7 +432,7 @@ const PublicView: React.FC = () => {
   const letterStatuses  = useLetterStatus(lettresSaisies, motAttendu);
   const status          = competition?.status ?? 'en_attente';
   const isRevelation    = status === 'revelation';
-  const showLetterTiles = ['en_cours', 'correct', 'incorrect'].includes(status) && lettresSaisies.length > 0;
+  const showLetterTiles = status === 'en_cours' && lettresSaisies.length > 0;
   const showFinalColors = status === 'correct' || status === 'incorrect';
   const wasCorrect      = lettresSaisies === motAttendu;
   const tileSize: TileSize = lettresSaisies.length > 12 ? 'md' : lettresSaisies.length > 8 ? 'lg' : 'xl';
@@ -518,8 +534,8 @@ const PublicView: React.FC = () => {
                     </div>
                   )}
 
-                  {/* CAS 4 : CORRECT sans lettres */}
-                  {status === 'correct' && !showLetterTiles && (
+                  {/* CAS 4 : CORRECT */}
+                  {status === 'correct' && (
                     <p
                       className="font-black tracking-[0.25em] animate-pulse-once"
                       style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)', color: '#16a34a' }}
@@ -528,8 +544,8 @@ const PublicView: React.FC = () => {
                     </p>
                   )}
 
-                  {/* CAS 5 : INCORRECT sans lettres */}
-                  {status === 'incorrect' && !showLetterTiles && (
+                  {/* CAS 5 : INCORRECT */}
+                  {status === 'incorrect' && (
                     <p
                       className="font-black tracking-[0.25em] animate-shake"
                       style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)', color: '#dc2626' }}
@@ -597,6 +613,58 @@ const PublicView: React.FC = () => {
 
       {/* ── Ticker sponsors ── */}
       <SponsorsTicker />
+
+      {/* ── Chrono Global Circulaire (FIXED & CLEAN) ── */}
+      {competition?.globalChronoActif && (
+        <div 
+          className="fixed bottom-12 right-12 z-[9999] flex items-center justify-center animate-bounce-subtle pointer-events-none"
+        >
+          <div className="relative w-44 h-44 flex items-center justify-center bg-white rounded-full shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] border-2 border-black/5">
+            <svg 
+              className="absolute inset-0 w-full h-full -rotate-90" 
+              viewBox="0 0 160 160"
+            >
+              {/* Fond du rail */}
+              <circle
+                cx="80"
+                cy="80"
+                r="70"
+                fill="none"
+                stroke="#f3f4f6"
+                strokeWidth="12"
+              />
+              {/* Barre de progression */}
+              <circle
+                cx="80"
+                cy="80"
+                r="70"
+                fill="none"
+                stroke={
+                  (competition.globalChronoTemps || 0) > 120 ? '#10b981' : 
+                  (competition.globalChronoTemps || 0) > 60  ? '#f59e0b' : 
+                  '#ef4444'
+                }
+                strokeWidth="12"
+                strokeDasharray={440}
+                strokeDashoffset={440 * (1 - (competition.globalChronoTemps || 0) / 180)}
+                strokeLinecap="round"
+                style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.4s' }}
+              />
+            </svg>
+            
+            {/* Contenu textuel central */}
+            <div className="flex flex-col items-center z-10">
+              <span className="text-[11px] font-black tracking-[0.3em] text-black/20 uppercase mb-1">
+                TEMPS
+              </span>
+              <span className="text-4xl font-black tabular-nums leading-none text-black">
+                {Math.floor((competition.globalChronoTemps || 0) / 60)}:
+                {String((competition.globalChronoTemps || 0) % 60).padStart(2, '0')}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
